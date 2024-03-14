@@ -1,9 +1,10 @@
 import datetime
 
-from flask import Flask
+from flask import Flask, render_template, request
+
 from data import db_session
-from data.users import User
 from data.jobs import Jobs
+from data.users import User
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -40,7 +41,7 @@ def add_captain_and_others(sess):
     emails = ['pythonist@mars.org', 'doctor@mars.org', 'zam_captain@mars.org']
     for name, surname, age, position, speciality, address, email in zip(
             names, surnames, ages, positions, specialities, addresses, emails
-            ):
+    ):
         user = User()
         user.name = name
         user.surname = surname
@@ -53,13 +54,60 @@ def add_captain_and_others(sess):
     sess.commit()
 
 
+def add_user(sess, name, surname, age, pos, spec, password, email, address):
+    user = User()
+    user.name = name
+    user.surname = surname
+    user.age = age
+    user.position = pos
+    user.speciality = spec
+    user.hashed_password = password
+    user.email = email
+    user.address = address
+    sess.add(user)
+    sess.commit()
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    print(request.method)
+    if request.method == 'GET':
+        return render_template('register.html', msg={'msg': ''})
+    elif request.method == 'POST':
+        if request.form['pass'] != request.form['rep_pass']:
+            return '<h1>Пароли не совпадают</h1>'
+        if not (
+                request.form['name'] and
+                request.form['surname'] and
+                request.form['age'] and
+                request.form['pos'] and
+                request.form['spec'] and
+                request.form['pass'] and
+                request.form['rep_pass'] and
+                request.form['email'] and
+                request.form['address']
+        ):
+            return '<h1>Не все параметры заполнены</h1>'
+        add_user(
+            db_sess, request.form['name'],
+            request.form['surname'],
+            request.form['age'],
+            request.form['pos'],
+            request.form['spec'],
+            request.form['pass'],
+            request.form['email'],
+            request.form['address']
+        )
+        return '<h1>Запись добавлена</h1>'
+
+
 def main():
-    db_session.global_init("db/marsiane.db")
-    db_sess = db_session.create_session()
     # add_captain_and_others(db_sess)
-    add_worker(db_sess)
-    # app.run()
+    # add_worker(db_sess)
+    app.run(host='127.0.0.1', port=5000)
 
 
 if __name__ == '__main__':
+    db_session.global_init("db/marsiane.db")
+    db_sess = db_session.create_session()
     main()

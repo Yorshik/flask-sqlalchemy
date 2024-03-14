@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<meta charset="UTF-8">
+<form>
+    <h1>Register Form</h1>
+    <h1>{{ msg["msg"] }}</h1>
+    <h6>Email</h6>
+    <input type="email" name="email">
+    <h6>Password</h6>
+    <input type="password" name="pass">
+    <h6>Repeat Password</h6>
+    <input type="password" name="rep_pass">
+    <h6>Name</h6>
+    <input type="text" name="name">
+    <h6>Surname</h6>
+    <input type="text" name="surname">
+    <h6>Age</h6>
+    <input type="number" name="age">
+    <h6>Position</h6>
+    <input type="text" name="pos">
+    <h6>Speciality</h6>
+    <input type="text" name="spec">
+    <h6>Address</h6>
+    <input type="text" name="address">
+    <h6>Save</h6>
+    <input type="submit" name="save" formmethod="post">
+</form>
+{% endblock %}
