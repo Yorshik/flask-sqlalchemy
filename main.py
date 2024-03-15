@@ -101,6 +101,21 @@ def register():
         return '<h1>Запись добавлена</h1>'
 
 
+@app.route('/magazine_of_works')
+def magazine_of_works():
+    works = db_sess.query(Jobs).all()
+    users = db_sess.query(User).all()
+    team_leaders = {}
+    for worker in works:
+        for user in users:
+            if worker.team_leader == user.id:
+                team_leaders[worker.team_leader] = user.surname + ' ' + user.name
+    print(team_leaders)
+    updated_works = [{'id': work.id, 'job': work.job, 'leader': team_leaders[worker.team_leader - 1], 'duration': work.start_date, 'collaborators': work.collaborators, 'is_finished': work.is_finished} for work in works]
+    print(len(updated_works))
+    return render_template('magazine.html', works={'works': updated_works})
+
+
 def main():
     # add_captain_and_others(db_sess)
     # add_worker(db_sess)
